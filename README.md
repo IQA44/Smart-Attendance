@@ -2,7 +2,6 @@
 
 <table width="100%" cellpadding="0" cellspacing="0">
   <tr>
-    <!-- الشعار الأول (أصغر) -->
     <td align="center" width="25%">
       <img src="Karkh1_Vocational_Edu_Dept_Logo.png"
            style="max-width:120px; width:100%; height:auto;" />
