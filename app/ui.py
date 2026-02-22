@@ -1232,8 +1232,10 @@ class AttendanceApp:
 
             source_students = load_stage_department_students(source_stage, source_department)
             target_students = load_stage_department_students(target_stage, target_department)
+            target_names = {s['name'] for s in target_students}
 
             moved_students = []
+            skipped_duplicates = []
             for student_name in selected_students:
                 student_to_move = None
                 for student in source_students:
@@ -1242,8 +1244,13 @@ class AttendanceApp:
                         break
 
                 if student_to_move:
+                    if student_name in target_names:
+                        skipped_duplicates.append(student_name)
+                        continue
+
                     target_students.append({"name": student_name, "stage": target_stage, "department": target_department})
                     moved_students.append(student_name)
+                    target_names.add(student_name)
 
                     for uid, student_data in card_students.items():
                         if (student_data['name'] == student_name and
@@ -1272,7 +1279,10 @@ class AttendanceApp:
                 if self.showing_records:
                     self.update_records_display()
             else:
-                messagebox.showwarning("تحذير", "لم يتم نقل أي طالب!")
+                if skipped_duplicates:
+                    messagebox.showwarning("تحذير", "الطلاب المحددون موجودون مسبقًا في القسم الهدف!")
+                else:
+                    messagebox.showwarning("تحذير", "لم يتم نقل أي طالب!")
 
         btn_frame = tk.Frame(move_window, bg="white")
         btn_frame.pack(pady=8)
