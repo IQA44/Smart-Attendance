@@ -72,6 +72,8 @@ def move_students(
     target_students = load_stage_department_students(target_stage, target_department)
 
     moved = []
+    skipped_duplicates = []
+    target_names = {s["name"] for s in target_students}
 
     for name in student_names:
         student_obj = None
@@ -81,12 +83,17 @@ def move_students(
                 break
 
         if student_obj:
+            if name in target_names:
+                skipped_duplicates.append(name)
+                continue
+
             target_students.append({
                 "name": name,
                 "stage": target_stage,
                 "department": target_department
             })
             moved.append(name)
+            target_names.add(name)
 
             
             for uid, data in card_students.items():
@@ -99,6 +106,8 @@ def move_students(
                     card_students[uid]["department"] = target_department
 
     if not moved:
+        if skipped_duplicates:
+            return False, "جميع الطلاب المحددين موجودون مسبقًا في المرحلة/القسم الهدف"
         return False, "لم يتم نقل أي طالب"
 
     source_students = [s for s in source_students if s["name"] not in moved]
